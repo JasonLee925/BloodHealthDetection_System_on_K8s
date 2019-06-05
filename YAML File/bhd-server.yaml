@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: bhd-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bhd-server
+  template:
+    metadata:
+      labels:
+        app: bhd-server
+    spec:
+      containers:
+      - name: bhd-server-k8s
+        image: jason83925/bhd-app:v0.3
+        ports:
+        - containerPort: 4000
+      hostNetwork: true
+
+
+
+#  labels:
+#    app: bhd-server
+#spec:
+#  containers:
+#  - name: bhd-server-k8s
+#    image: jason83925/bhd-app:v0.3
+#    ports: 
+#    - name: bhd-port
+#      containerPort: 4000
+#  hostNetwork: true

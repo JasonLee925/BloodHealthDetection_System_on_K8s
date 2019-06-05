@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bhd-server-svc
+spec:
+  ports:
+  - port: 4000
+    protocol: TCP
+    nodePort: 30678
+  selector:
+    app: bhd-server
+  type: NodePort

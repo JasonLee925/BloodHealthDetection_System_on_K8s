@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Blood Health Detection Chart - Current</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+
+<body>
+	<H1 align="center">Blood Health Detection Chart (BHD Chart) - Current</H1>
+    <div id="BloodOxygenChart" style="width:1000px;height:500px;" ></div>
+	<div id="BloodGlucoseChart" style="width:1000px;height:500px;float:left;"></div>
+	<div id="BloodPressureChart" style="width:1000px;height:500px;float:left;"></div>
+	
+    <script type="text/javascript">		
+		//============================================= Oxygen =============================================//		
+        $(document).ready(function () {
+            $.get("/oxygen", function (data, status) {
+                var index = 0;
+                Plotly.plot("BloodOxygenChart", [{
+                    y: data
+                }], {
+						title: '血氧 (Oxygen)',
+						titlefont: {size:32},
+						xaxis: {title:'時間(s)'},
+						yaxis: {title:'濃度 (%SpO2)'},
+                        margin: { t: 60 }
+                    });
+                index = data.length;
+                setInterval(function () {
+                    $.get("/oxygen", function (data, status) {
+                        const difData = data.slice(index);
+                        Plotly.extendTraces(BloodOxygenChart, { y: [difData] }, [0]);
+                        index = data.length;
+                    });
+                }, 1000);
+            });
+        });
+		
+		//============================================= Glucose(血糖) =============================================//	
+        $(document).ready(function () {
+            $.get("/glucose", function (data, status) {
+                var index = 0;
+                Plotly.plot("BloodGlucoseChart", [{
+                    y: data, line: {color: 'rgb(255, 128, 0)'}
+                }], {
+						title: '血糖 (Glucose)',
+						titlefont: {size:32},
+						xaxis: {title:'次數'},
+						yaxis: {title:'濃度 (mg/dl)'},
+                        margin: { t: 60 }
+                    });
+                index = data.length;
+                setInterval(function () {
+                    $.get("/glucose", function (data, status) {
+                        const difData = data.slice(index);
+                        Plotly.extendTraces(BloodGlucoseChart, { y: [difData] }, [0]);
+                        index = data.length;
+                    });
+                }, 1000);
+            });
+        });
+		
+		//============================================= Pressure(血壓) =============================================//	
+        $(document).ready(function () {
+			var layout = {
+						title: '血壓 (Pressure)',
+						xaxis: {title:'次數', size: 12},
+						titlefont: {size:32},
+						yaxis: {title:'汞柱 (mmHg)'},
+                        margin: { t: 60 }
+                    }
+
+            $.get("/pressure", function (data, status) {
+				var _data = [
+						{y: data.sys, name:'收縮壓', line: {color: 'rgb(176, 23, 31)'}},
+						{y: data.dia, name:'舒張壓', line: {color: 'rgb(0, 201, 87)'}}
+					];
+					
+                Plotly.plot("BloodPressureChart", _data, layout);
+				
+                setInterval(function () {
+                    $.get("/pressure", function (data, status) {
+							Plotly.react(BloodPressureChart, [
+							{y: data.sys, name:'收縮壓', line: {color: 'rgb(176, 23, 31)'}},
+							{y: data.dia, name:'舒張壓', line: {color: 'rgb(0, 201, 87)'}}
+						], layout);
+                    });
+                }, 1000);
+            });
+        });
+		
+		//============================================= 框架設定 =============================================//
+		// 當頁面視窗大小改變
+        window.onresize = function () {
+            // 改變plotly繪圖大小
+			Plotly.Plots.resize("BloodOxygenChart");
+			Plotly.Plots.resize("BloodGlucoseChart");
+			Plotly.Plots.resize("BloodPressureChart");
+        };
+		
+		// 設定圖表及邊框大小
+		function chartSizing(chartId, _width, _height, mleft, mtop) {
+			const d3 = Plotly.d3;
+            // 選擇畫布並設定左跟上的預留比例
+            d3.select("div[id='" + chartId + "']")
+                .style({
+                    width: _width + "%",
+                    "margin-left": mleft + "%",
+                    height: _height + "vh",
+                    "margin-top": mtop + "vh"
+                });
+		}
+		
+		chartSizing("BloodOxygenChart", 100, 40, 0, 0);
+		chartSizing("BloodGlucoseChart", 45, 40, 5, 5);
+		chartSizing("BloodPressureChart", 45, 40, 5, 5);
+		
+    </script>
+</body>
+
+</html>
