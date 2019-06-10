@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: bhd-server-k8s
-        image: jason83925/bhd-app:v0.3
+        image: jason83925/bhd-app:v0.4
         ports:
         - containerPort: 4000
       hostNetwork: true
