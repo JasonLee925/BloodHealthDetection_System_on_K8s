@@ -11,7 +11,7 @@ M.S. Course - Design of IoT Interactive Product: Final Program: Blood Health Det
 ### Post
 
  - 血氧
-`curl -X POST 127.0.0.1:4000/oxygen -d "o2=256&hbeat=1"`
+`curl -X POST 127.0.0.1:30678/oxygen -d "o2=256&hbeat=1"`
 
  - 血糖
 `curl -X POST <ip-address>:30678/glucose -d value=10`
